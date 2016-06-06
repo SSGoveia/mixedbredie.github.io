@@ -4,6 +4,4 @@ title: pgRouting Workshop
 permalink: /pgrouting-workshop/
 ---
 
-##pgRouting Workshop
-
-###FOSS4G UK
+This long page will contain the workshop material for FOSS4G UK.
