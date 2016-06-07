@@ -25,7 +25,7 @@ Open QGIS and drag shapefiles onto the canvas
 
 **Loading data**
 
-Open Processing toolbox and search for PostGIS.  Find the "Import Vector into PostGIS database (available connections)" tool and open it.
+Open Processing toolbox (`Processing > Toolbox`) and search for `PostGIS`.  Find the `Import Vector into PostGIS database (available connections)` tool and open it.  Select the PostGIS connection `connex name` and choose the sotn_roadlink layer as input layer.  The output geometry type is `LineString` and the output CRS is `EPSG:27700`.  Set the schema to `schema name` and set the table name to something reasonable like `or_roadlinks`. I like my primary key to be named `gid` and geometry column to be called `geometry`.  Leave all other options as default but uncheck the `Promote to Multipart` option.  Note the OGR command in the box at the bottom - this could be copied into a batch file or shell script and reused.
 
 **Preparing data**
 
