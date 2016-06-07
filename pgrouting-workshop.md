@@ -25,11 +25,13 @@ Open QGIS and drag shapefiles onto the canvas
 
 **Loading data**
 
-Open Processing toolbox and find the PostGIS loader
+Open Processing toolbox and search for PostGIS.  Find the "Import Vector into PostGIS database (available connections)" tool and open it.
 
 **Preparing data**
 
-Once data loaded to the database add some fields
+Once data loaded to the database add some fields for pgRouting.
+
+Populate fields with values suitable for network.
 
 **Configuring data**
 
@@ -37,4 +39,10 @@ Build the network, check the network
 
 **Routing!**
 
-Using QGIS and PgAdmin
+Using QGIS and PgAdmin explore some of the available routing algorithms
+
+Djikstra
+
+Driving Distance
+
+Alphashape
