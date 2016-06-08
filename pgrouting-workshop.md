@@ -8,7 +8,7 @@ permalink: /pgrouting-workshop/
 
 We'll be using the OSGeo Live desktop to import Ordnance Survey Open Roads data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions with some use cases.
 
-**Initial setup**
+**Step 0: Initial setup**
 
 Have you got a DVD drive on your laptop?
 
@@ -21,17 +21,23 @@ Get the data: [Dropbox Link](#)
 
 **Step 1: View the data in QGIS**
 
-Open QGIS (Start > Geospatial > Desktop GIS > QGIS)
+Open QGIS (Start > Geospatial > Desktop GIS > QGIS) or look in the Desktop GIS folder on the desktop.
+
+![Open QGIS](images/1_qgisdesktop.jpg)
 
 Browse to data folder
 
 Drag shapefiles onto canvas.
 
+![Check layers](images/1_qgisdesktop_layers.jpg)
+
 ***
 
 **Step 2: Check the PostGIS database**
 
-Open pgAdmin (Start > Geospatial > Databases > pgAdmin III)
+Open pgAdmin (Start > Geospatial > Databases > pgAdmin III) or look in the Databases folder on the desktop.
+
+![Open PgAdminIII](images/2_pgadminIII.jpg)
 
 Check connections: `local` (user / user)
 
@@ -41,11 +47,19 @@ Check schema: `public`
 
 Check extensions: `pgRouting` and `PostGIS`
 
+![Check connection](images/3_pgadminIII.jpg)
+
 ***
 
 **Step 3: Load data from QGIS to PostGIS**
 
 Open or switch back to QGIS.
+
+Open the Processing Toolbox (`Processing > Toolbox`) and search for `PostGIS`.
+
+Open the `Import vector layer to PostGIS database (existing connection)` tool.
+
+![Load data](images/4_qgis_processing.jpg)
 
 Set the following: 
 
@@ -61,7 +75,15 @@ Set the following:
  
 Note the OGR command in the box at the bottom - this could be copied into a batch file or shell script and reused.
 
-Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `sotn_road` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
+Click the RUN button to load the shapefile into the database.  Takes a few seconds.
+
+![Loader config](images/5_qgis_postgisloader.jpg)
+
+When the load has completed close the tool.  Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `sotn_road` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
+
+![Add PostGIS layer](images/6_qgis_addpostgislayer.jpg)
+
+![Check PostGIS layer](images/7_qgis_postgislayer.jpg)
 
 ***
 
@@ -69,7 +91,7 @@ Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting 
 
 Open or switch to PgAdminIII.
 
-Navigate to the tables in the `public` schema of the `pgRouting` database.  Click the SQL button on the top menu bar to open a SQL editor window.  We’ll be using this to update our sotn_road table with the fields and values that pgRouting needs.
+Navigate to the tables in the `public` schema of the `pgRouting` database.  Click the SQL button on the top menu bar to open a SQL editor window.  We’ll be using this to update our `sotn_road` table with the fields and values that pgRouting needs.
 
 This section is a straightforward copy and paste exercise but we’ll go through it step by step.
 
@@ -91,12 +113,12 @@ This section is a straightforward copy and paste exercise but we’ll go through
       ADD COLUMN rule text,
       ADD COLUMN isolated integer;
 
-4.2 Create the required indices on the source and target fields for the fast finding of the start and end of the route.
+4.2 Create the required indices on the source and target fields for the fast finding of the start and end of the route.  The source and target fields are populated with the node IDs that are created when the network topology is built later on.
 
     CREATE INDEX sotn_road_source_idx ON public.sotn_road USING btree(source);
     CREATE INDEX sotn_road_target_idx ON public.sotn_road USING btree(target);
 
-4.3 Populate the line end coordinate fields.
+4.3 Populate the line end coordinate fields (used in the Astar function).
 
     UPDATE public.sotn_road
       SET x1 = st_x(st_startpoint(geometry)),
@@ -174,7 +196,7 @@ Start or switch to QGIS.
 
 Add the PgRouting Layer plugin through `Plugins > Install and Manage Plugins`
 
-You will need to go to Settings and check the experimental box and then back to the `All` tab to search for “pgRouting”. Check the box next to the plugin and click Install.
+You will need to go to Settings and check the experimental box and then back to the `All` tab to search for `pgRouting`. Check the box next to the plugin and click Install.
 
 The plugin should appear in a docked panel in QGIS.  If it doesn’t, right click on an empty space on the menu bar and check the box in the context menu to add it.
 
