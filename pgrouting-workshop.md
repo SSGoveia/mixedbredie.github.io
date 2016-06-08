@@ -19,17 +19,21 @@ Get the data: [Dropbox Link](#)
 
 Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/en/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0) or, if you're running Linux, your package manager.
 
+To complete this workshop you will either need to boot you laptop from the live DVD or install one of the virualisation applications and run the ISO or VMDK as a virutal machine.  You'll need to be able to access the internet and also your USB ports.  If you could test this before the workshop it would help make the experience a good one for all.
+
 ***
 
 **Step 1: View the data in QGIS**
+
+Boot into OSGeo Live or start your virtual machine.
 
 Open QGIS (Start > Geospatial > Desktop GIS > QGIS) or look in the Desktop GIS folder on the desktop.
 
 ![Open QGIS](/images/1_qgisdesktop.jpg)
 
-Browse to data folder
+Browse to the data folder holding the `sotn_road` and `sotn_node` shapefiles.
 
-Drag shapefiles onto canvas.
+Drag the shapefiles onto the QGIS canvas.
 
 ![Check layers](/images/1_qgisdesktop_layers.jpg)
 
