@@ -267,7 +267,7 @@ With reverse cost:
 
 The alphashape function is a bit more complex as it uses a number of PostGIS and pgRouting functions to generate the resulting polygon.  Copy and paste the SQL below into your SQL window and run it.  
 
-We need to create a node table first (should be about double the number of nodes in the network):
+We need to create a temporary node table first (should be about double the number of nodes in the network):
 
     CREATE TEMPORARY TABLE node AS
     SELECT id, ST_X(geometry) AS x, ST_Y(geometry) AS y, geometry
@@ -308,6 +308,7 @@ Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 se
 
 What the SQL above does is run the driving distance function which returns a set of records to the alphashape function. The alphashape function returns a table of XY rows describing the vertices of the alphashape polygon.  These coordinates are converted to points and then lines and then, finally, a polygon.  It is important to note that the alphashape code has no control over the order of the points so the output shapes may be similar but different.
 
+***
 
 **References and supporting documentation**
 
@@ -315,5 +316,9 @@ What the SQL above does is run the driving distance function which returns a set
 
 [Anita Graser](https://anitagraser.com/?s=pgrouting)
 
+[Ross McDonald](http://ghost.mixedbredie.net/tag/pgrouting/)
 
+[pgRouting user mailing list](http://lists.osgeo.org/mailman/listinfo/pgrouting-users)
+
+[Ordnance Survey data](https://www.ordnancesurvey.co.uk/business-and-government/products/opendata-products.html)
 
