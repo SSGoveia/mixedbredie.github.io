@@ -4,12 +4,14 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+### Information
 
-### More Information
-
-A place to include any other types of information that you'd like to include about yourself.
+Resources for the pgRouting workshop held at FOSS4G UK 14 - 16 June 2016
 
 ### Contact me
 
-[email@domain.com](mailto:email@domain.com)
+Ross McDonald, GIS Data Coordinator, Angus Council
+
+01307476419
+
+mcdonaldr @ angus.gov.uk
