@@ -6,24 +6,46 @@ permalink: /pgrouting-workshop/
 
 This long page will contain the workshop material for FOSS4G UK.
 
-**Introduction and overview**
+####**Introduction and overview**
 
 We'll be using the OSGeo Live desktop to import Ordnance Survey Open Roads data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions with some use cases.
 
-**Initial setup**
+####**Initial setup**
 
 Have you got a DVD drive on your laptop?
 
 * Yes: get one of the OSGeo Live DVDs at FOSS4G UK
 * No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-vm-9.5.7z/download) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-i386.iso/download) or [64bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-amd64.iso/download)) for a USB drive.
 
-**Previewing data**
+Get the data: Download the sample data from [Dropbox Link](#)
 
-Download the sample data from [Dropbox Link](#)
+***
 
-Open QGIS and drag shapefiles onto the canvas
+####**Step 1: View the data in QGIS**
 
-**Step 3: Load data from QGIS to PostGIS**
+Open QGIS (Start > Geospatial > Desktop GIS > QGIS)
+
+Browse to data folder
+
+Drag shapefiles onto canvas.
+
+***
+
+####**Step 2: Check the PostGIS database**
+
+Open pgAdmin (Start > Geospatial > Databases > pgAdmin III)
+
+Check connections: `local` (user / user)
+
+Check database: `pgrouting`
+
+Check schema: `public`
+
+Check extensions: `pgRouting` and `PostGIS`
+
+***
+
+####**Step 3: Load data from QGIS to PostGIS**
 
 Open or switch back to QGIS.
 
@@ -44,7 +66,9 @@ Note the OGR command in the box at the bottom - this could be copied into a batc
 
 Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `sotn_road` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
 
-**Step 4: Add the pgRouting fields**
+***
+
+####**Step 4: Add the pgRouting fields**
 
 Open or switch to PgAdminIII.
 
@@ -125,7 +149,9 @@ Navigate to the tables in the `public` schema of the `pgRouting` database.  Clic
 
 It’s worth noting here that OS Open Roads has been designed as a high level road network for quick and dirty routing and as such does not have the extra detail required for turn restrictions and one way streets.  ITN and the new Highways layer have got the road routinginformation (RRI) detail.
 
-**Step 5: Building the network**
+***
+
+####**Step 5: Building the network**
 
 Now that we have added all the fields and populated them with some reasonable values we can build our network topology.  This will take about a minute.
 
@@ -141,8 +167,9 @@ Before we use the network it’s a good idea to clean up the table after all the
 
 Now we are ready to route!
 
+***
 
-**Step 6: Routing in QGIS**
+####**Step 6: Routing in QGIS**
 
 Start or switch to QGIS.
 
@@ -167,4 +194,10 @@ Try changing the cost fields from distance (`cost_len` / `rcost_len`) to time (`
 Select the **driving distance** function and pick a start node and then a distance (metres) or time (seconds) and see the rash of red nodes that indicate the nodes reachable within the specified cost.
 
 Select the **alphashape** function and use the same start node and cost set above and see the lovely pink result.  The alphashape is like a shrink-wrapped convex hull around the set of points.
+
+***
+
+####**Step 7: Routing with SQL in PgAdminIII**
+
+Open or switch back to PgAdminIII.
 
