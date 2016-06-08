@@ -59,7 +59,6 @@ Set the following:
 -	Geometry column name: `geometry`
 -	Uncheck `Promote to Multipart` (pgRouting likes LINESTRING and not MULTILINESTRING)
  
-
 Note the OGR command in the box at the bottom - this could be copied into a batch file or shell script and reused.
 
 Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `sotn_road` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
@@ -72,7 +71,9 @@ Open or switch to PgAdminIII.
 
 Navigate to the tables in the `public` schema of the `pgRouting` database.  Click the SQL button on the top menu bar to open a SQL editor window.  We’ll be using this to update our sotn_road table with the fields and values that pgRouting needs.
 
-4.1 First, add the columns required:
+This section is a straightforward copy and paste exercise but we’ll go through it step by step.
+
+4.1 First, add the columns required to the `sotn_road` table:
 
     ALTER TABLE public.sotn_road
       ADD COLUMN source integer,
@@ -90,7 +91,7 @@ Navigate to the tables in the `public` schema of the `pgRouting` database.  Clic
       ADD COLUMN rule text,
       ADD COLUMN isolated integer;
 
-4.2 Create the required indices on the source and target fields for the fast finding of the start and end of the route and, optionally, on the class and formofway fields for classification.
+4.2 Create the required indices on the source and target fields for the fast finding of the start and end of the route.
 
     CREATE INDEX sotn_road_source_idx ON public.sotn_road USING btree(source);
     CREATE INDEX sotn_road_target_idx ON public.sotn_road USING btree(target);
