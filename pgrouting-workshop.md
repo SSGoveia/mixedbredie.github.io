@@ -17,6 +17,8 @@ Have you got a DVD drive on your laptop?
 
 Get the data: [Dropbox Link](#)
 
+Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/en/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0) or, if you're running Linux, your package manager.
+
 ***
 
 **Step 1: View the data in QGIS**
@@ -132,7 +134,7 @@ This section is a straightforward copy and paste exercise but we’ll go through
       SET cost_len = ST_Length(geometry),
       rcost_len = ST_Length(geometry);
 
-4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  I have set the "Not Classified" links to have a speed of 1km/h which increases the cost of traversing that link. Most "Not Classified" are paths and private roads and so I have elected to make them less desirable to travel on. Adjust the speeds here as you see fit and note that I have used kilometres per hour and not miles per hour.
+4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  I have set the "Not Classified" links to have a speed of 1km/h which increases the cost of traversing that link. Most "Not Classified" are paths and private roads and so I have elected to make them less desirable to travel on. Adjust the speeds here as you see fit.  Note that I have used kilometres per hour and not miles per hour.
 
     UPDATE public.sotn_road SET speed_km = 
       CASE WHEN class = 'A Road' AND formofway = 'Roundabout' THEN 20
@@ -161,6 +163,8 @@ This section is a straightforward copy and paste exercise but we’ll go through
       WHEN class = 'Unclassified' AND formofway = 'Slip Road' THEN 30
       WHEN class = 'Unclassified' AND formofway = 'Collapsed Dual Carriageway' THEN 40
       ELSE 1 END;
+      
+Something to think about is different average speeds in rural and urban areas and you could update selected links that intersect with an urban polygon and halve the average speed to get more realistic results.
 
 4.6 Then use the speed and length to calulate road link travel time.
 
@@ -223,3 +227,93 @@ Select the **alphashape** function and use the same start node and cost set abov
 Open or switch back to PgAdminIII.
 
 Navigate to the `pgrouting` database and open a SQL editor window.
+
+To calculate the shortest path between two points on the network we can use the Djikstra function like this: 
+
+    SELECT seq, id1 AS node, id2 AS edge, cost FROM pgr_dijkstra('
+    SELECT gid AS id,
+             source::integer,
+             target::integer,
+             cost_len::double precision AS cost
+            FROM sotn_road',
+    7997, 11452, false, false);
+
+To try another function between the same start and end points we can use the A-star function.  This uses the geographical information we added earlier (x1, y1, x2, y2) to prefer network links that are closest to the target of the shortest path search.
+
+    SELECT seq, id1 AS node, id2 AS edge, cost FROM pgr_astar('
+    SELECT gid AS id,
+             source::integer,
+             target::integer,
+             length::double precision AS cost,
+             x1, y1, x2, y2
+            FROM sotn_road',
+    7997, 11452, false, false);
+    
+Driving distance is a useful function as a number of other functions hang off it including `pgr_alphashape` and `pgr_pointsAsPolygon`.  The functions below show the links reachable within 2000m of OS HQ.  Without reverse cost:
+
+    SELECT seq, id1 AS node, cost
+        FROM pgr_drivingDistance(
+                'SELECT gid, source, target, cost_len FROM sotn_road',
+                11452, 2000, false, false
+        );
+
+With reverse cost:
+
+    SELECT seq, id1 AS node, cost
+        FROM pgr_drivingDistance(
+                'SELECT id, source, target, cost_len, rcost_len FROM sotn_road’,
+                11452, 2000, true, true
+        );
+
+The alphashape function is a bit more complex as it uses a number of PostGIS and pgRouting functions to generate the resulting polygon.  Copy and paste the SQL below into your SQL window and run it.  
+
+We need to create a node table first (should be about double the number of nodes in the network):
+
+    CREATE TEMPORARY TABLE node AS
+    SELECT id, ST_X(geometry) AS x, ST_Y(geometry) AS y, geometry
+    	FROM (
+    	    SELECT source AS id,
+    		ST_Startpoint(geometry) AS geometry
+    		FROM sotn_road
+    	    UNION
+    	    SELECT target AS id,
+    		ST_Startpoint(geometry) AS geometry
+    		FROM sotn_road
+    	) AS node;
+
+Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 seconds) from OS HQ.
+
+    SELECT ST_SetSRID(ST_MakePolygon(ST_AddPoint(foo.openline, ST_StartPoint(foo.openline))),27700) AS geometry
+    	FROM (
+    	  SELECT ST_Makeline(points ORDER BY id) AS openline
+    	  FROM (
+    	    SELECT row_number() over() AS id, ST_MakePoint(x, y) AS points 
+    	    FROM pgr_alphashape('
+    		SELECT *
+    		FROM node
+    		    JOIN
+    		    (SELECT * FROM pgr_drivingDistance(''
+         			SELECT gid AS id,
+         			source::int4 AS source,
+         			target::int4 AS target,
+         			cost_time::float8 AS cost,
+         			rcost_time::float8 AS reverse_cost
+         			FROM sotn_road'',
+         			11452,
+         			600,
+         			true,
+         			true)) AS dd ON node.id = dd.id1'::text)
+    	  ) AS a
+    	) AS foo;
+
+What the SQL above does is run the driving distance function which returns a set of records to the alphashape function. The alphashape function returns a table of XY rows describing the vertices of the alphashape polygon.  These coordinates are converted to points and then lines and then, finally, a polygon.  It is important to note that the alphashape code has no control over the order of the points so the output shapes may be similar but different.
+
+
+**References and supporting documentation**
+
+[PgRouting.org](http://pgrouting.org)
+
+[Anita Graser](https://anitagraser.com/?s=pgrouting)
+
+
+
