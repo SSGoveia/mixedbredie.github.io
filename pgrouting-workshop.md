@@ -4,24 +4,22 @@ title: pgRouting Workshop
 permalink: /pgrouting-workshop/
 ---
 
-This long page will contain the workshop material for FOSS4G UK.
-
-####**Introduction and overview**
+**Introduction and overview**
 
 We'll be using the OSGeo Live desktop to import Ordnance Survey Open Roads data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions with some use cases.
 
-####**Initial setup**
+**Initial setup**
 
 Have you got a DVD drive on your laptop?
 
 * Yes: get one of the OSGeo Live DVDs at FOSS4G UK
 * No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-vm-9.5.7z/download) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-i386.iso/download) or [64bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-amd64.iso/download)) for a USB drive.
 
-Get the data: Download the sample data from [Dropbox Link](#)
+Get the data: [Dropbox Link](#)
 
 ***
 
-####**Step 1: View the data in QGIS**
+**Step 1: View the data in QGIS**
 
 Open QGIS (Start > Geospatial > Desktop GIS > QGIS)
 
@@ -31,7 +29,7 @@ Drag shapefiles onto canvas.
 
 ***
 
-####**Step 2: Check the PostGIS database**
+**Step 2: Check the PostGIS database**
 
 Open pgAdmin (Start > Geospatial > Databases > pgAdmin III)
 
@@ -45,7 +43,7 @@ Check extensions: `pgRouting` and `PostGIS`
 
 ***
 
-####**Step 3: Load data from QGIS to PostGIS**
+**Step 3: Load data from QGIS to PostGIS**
 
 Open or switch back to QGIS.
 
@@ -68,7 +66,7 @@ Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting 
 
 ***
 
-####**Step 4: Add the pgRouting fields**
+**Step 4: Add the pgRouting fields**
 
 Open or switch to PgAdminIII.
 
@@ -151,7 +149,7 @@ It’s worth noting here that OS Open Roads has been designed as a high level ro
 
 ***
 
-####**Step 5: Building the network**
+**Step 5: Building the network**
 
 Now that we have added all the fields and populated them with some reasonable values we can build our network topology.  This will take about a minute.
 
@@ -169,7 +167,7 @@ Now we are ready to route!
 
 ***
 
-####**Step 6: Routing in QGIS**
+**Step 6: Routing in QGIS**
 
 Start or switch to QGIS.
 
@@ -197,7 +195,8 @@ Select the **alphashape** function and use the same start node and cost set abov
 
 ***
 
-####**Step 7: Routing with SQL in PgAdminIII**
+**Step 7: Routing with SQL in PgAdminIII**
 
 Open or switch back to PgAdminIII.
 
+Navigate to the `pgrouting` database and open a SQL editor window.
