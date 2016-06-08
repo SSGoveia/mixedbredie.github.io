@@ -23,13 +23,13 @@ Get the data: [Dropbox Link](#)
 
 Open QGIS (Start > Geospatial > Desktop GIS > QGIS) or look in the Desktop GIS folder on the desktop.
 
-![Open QGIS](images/1_qgisdesktop.jpg)
+![Open QGIS](/images/1_qgisdesktop.jpg)
 
 Browse to data folder
 
 Drag shapefiles onto canvas.
 
-![Check layers](images/1_qgisdesktop_layers.jpg)
+![Check layers](/images/1_qgisdesktop_layers.jpg)
 
 ***
 
@@ -37,7 +37,7 @@ Drag shapefiles onto canvas.
 
 Open pgAdmin (Start > Geospatial > Databases > pgAdmin III) or look in the Databases folder on the desktop.
 
-![Open PgAdminIII](images/2_pgadminIII.jpg)
+![Open PgAdminIII](/images/2_pgadminIII.jpg)
 
 Check connections: `local` (user / user)
 
@@ -47,7 +47,7 @@ Check schema: `public`
 
 Check extensions: `pgRouting` and `PostGIS`
 
-![Check connection](images/3_pgadminIII.jpg)
+![Check connection](/images/3_pgadminIII.jpg)
 
 ***
 
@@ -59,7 +59,7 @@ Open the Processing Toolbox (`Processing > Toolbox`) and search for `PostGIS`.
 
 Open the `Import vector layer to PostGIS database (existing connection)` tool.
 
-![Load data](images/4_qgis_processing.jpg)
+![Load data](/images/4_qgis_processing.jpg)
 
 Set the following: 
 
@@ -77,13 +77,13 @@ Note the OGR command in the box at the bottom - this could be copied into a batc
 
 Click the RUN button to load the shapefile into the database.  Takes a few seconds.
 
-![Loader config](images/5_qgis_postgisloader.jpg)
+![Loader config](/images/5_qgis_postgisloader.jpg)
 
 When the load has completed close the tool.  Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `sotn_road` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
 
-![Add PostGIS layer](images/6_qgis_addpostgislayer.jpg)
+![Add PostGIS layer](/images/6_qgis_addpostgislayer.jpg)
 
-![Check PostGIS layer](images/7_qgis_postgislayer.jpg)
+![Check PostGIS layer](/images/7_qgis_postgislayer.jpg)
 
 ***
 
