@@ -19,7 +19,7 @@ Get the data: [Dropbox Link](#)
 
 Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/en/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0) or, if you're running Linux, your package manager.
 
-To complete this workshop you will either need to boot you laptop from the live DVD or install one of the virualisation applications and run the ISO or VMDK as a virutal machine.  You'll need to be able to access the internet and also your USB ports.  If you could test this before the workshop it would help make the experience a good one for all.
+To complete this workshop you will either need to boot you laptop from the live DVD or install one of the virtualisation applications and run the ISO or VMDK as a virtual machine.  You'll need to be able to access the internet and also your USB ports.  If you could test this before the workshop it would help make the experience a good one for all.
 
 ***
 
@@ -138,7 +138,7 @@ This section is a straightforward copy and paste exercise but we’ll go through
       SET cost_len = ST_Length(geometry),
       rcost_len = ST_Length(geometry);
 
-4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  I have set the "Not Classified" links to have a speed of 1km/h which increases the cost of traversing that link. Most "Not Classified" are paths and private roads and so I have elected to make them less desirable to travel on. Adjust the speeds here as you see fit.  Note that I have used kilometres per hour and not miles per hour.
+4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  I have set the "Not Classified" links to have a speed of 1km/h which increases the cost of traversing that link. Most "Not Classified" are paths and private roads and so I have chosen to make them less desirable to travel on. Adjust the speeds here as you see fit.  Note that I have used kilometres per hour and not miles per hour.
 
     UPDATE public.sotn_road SET speed_km = 
       CASE WHEN class = 'A Road' AND formofway = 'Roundabout' THEN 20
@@ -310,7 +310,7 @@ Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 se
     	  ) AS a
     	) AS foo;
 
-What the SQL above does is run the driving distance function which returns a set of records to the alphashape function. The alphashape function returns a table of XY rows describing the vertices of the alphashape polygon.  These coordinates are converted to points and then lines and then, finally, a polygon.  It is important to note that the alphashape code has no control over the order of the points so the output shapes may be similar but different.
+What the SQL above does is run the driving distance function which returns a set of records to the alphashape function. The alphashape function returns a table of XY rows describing the vertices of the alphashape polygon.  These coordinates are converted to points and then lines and then, finally, a polygon.  It is important to note that the alphashape code has no control over the order of the points so the output shapes may not be the same but will be similar.
 
 ***
 
