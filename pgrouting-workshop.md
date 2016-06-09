@@ -6,20 +6,20 @@ permalink: /pgrouting-workshop/
 
 **Introduction and overview**
 
-We'll be using the OSGeo Live desktop to import Ordnance Survey Open Roads data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions with some use cases.
+We'll be using the OSGeo Live desktop to import Ordnance Survey [Open Roads](https://www.ordnancesurvey.co.uk/business-and-government/products/os-open-roads.html) data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions with some use cases.  If there is time at the end we'll look at using PostgreSQL functions.
 
 **Step 0: Initial setup**
 
 Have you got a DVD drive on your laptop?
 
 * Yes: get one of the OSGeo Live DVDs at FOSS4G UK
-* No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-vm-9.5.7z/download) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-i386.iso/download) or [64bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-amd64.iso/download)) for a USB drive.
+* No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-vm-9.5.7z/download) (4GB)for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-amd64.iso/download)) (4GB) dfor a USB drive.
 
-Get the data: [Dropbox Link](#)
+Get the data: [Dropbox Link](https://dl.dropboxusercontent.com/u/25604821/pgrouting-workshop.zip)
 
 Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/en/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0) or, if you're running Linux, your package manager.
 
-To complete this workshop you will either need to boot you laptop from the live DVD or install one of the virtualisation applications and run the ISO or VMDK as a virtual machine.  You'll need to be able to access the internet and also your USB ports.  If you could test this before the workshop it would help make the experience a good one for all.
+To complete this workshop you will either need to boot your laptop from the live DVD or install one of the virtualisation applications and run the ISO or VMDK as a virtual machine.  You'll need to be able to access the internet and also your USB ports.  If you could test this before the workshop it would help make the experience a good one for all.
 
 ***
 
