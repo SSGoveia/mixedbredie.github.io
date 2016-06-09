@@ -314,7 +314,7 @@ What the SQL above does is run the driving distance function which returns a set
 
 ***
 
-## **Step 8: Adding some service locations
+**Step 8: Adding some service locations**
 
 Add the poi.shp file to the QGIS canvas.  You will see four dots on the map.
 
@@ -351,7 +351,7 @@ This SQL assigns each of the points in the poi layer a node ID from the sotn_roa
 
 ***
 
-## **Step 9: Creating an alphashape function
+**Step 9: Creating an alphashape function**
 
 I expect we’ll be running short of time round about now so again this is a copy and paste exercise and I’ll explain what this function does below.  Hopefully the comments will help.
 
@@ -451,6 +451,7 @@ To execute the function we need the name of our POI table – poi – and a time
     
     SELECT corporate.make_isochronesx('sotn_poi', 900);
 
+***
 
 **References and supporting documentation**
 
