@@ -314,6 +314,144 @@ What the SQL above does is run the driving distance function which returns a set
 
 ***
 
+## **Step 8: Adding some service locations
+
+Add the poi.shp file to the QGIS canvas.  You will see four dots on the map.
+
+Open the Processing toolbox and find the PostGIS loading tool we used earlier.  Open it and set it up to load the poi shapefile into the database.
+
+Open or switch to PgAdminIII and connect to the pgRouting database.  Open a SQL editor window.
+
+Copy and paste the following SQL into the editor window:
+
+    ALTER TABLE public.poi 
+    ADD COLUMN nearest_node integer;
+     
+    CREATE TABLE temp AS
+       SELECT a.gid, b.id, min(a.dist)
+       FROM
+         (SELECT poi.gid, 
+                 min(ST_distance(poi.geometry,  sotn_road_vertices_pgr.the_geom)) AS dist
+          FROM poi, sotn_road_vertices_pgr
+          GROUP BY poi.gid) AS a,
+         (SELECT poi.gid, sotn_road_vertices_pgr.id, 
+                 ST_distance(poi.geometry, sotn_road_vertices_pgr.the_geom) AS dist
+       FROM poi, sotn_road_vertices_pgr) AS b
+       WHERE a.dist = b. dist
+       AND a.gid = b.gid
+       GROUP BY a.gid, b.id;
+     
+    UPDATE poi
+    SET nearest_node = 
+       (SELECT id 
+        FROM temp
+        WHERE temp.gid = poi.gid);
+
+This SQL assigns each of the points in the poi layer a node ID from the sotn_road network.  We’ll use this information to create a function to compute alphashapes for each of the points of interest.
+
+***
+
+## **Step 9: Creating an alphashape function
+
+I expect we’ll be running short of time round about now so again this is a copy and paste exercise and I’ll explain what this function does below.  Hopefully the comments will help.
+
+    CREATE OR REPLACE FUNCTION public.make_isochronesx(v_input text, v_cost integer)
+      RETURNS integer AS
+    $BODY$
+    DECLARE
+    	cur_src refcursor;
+    	v_nn integer;
+    	v_geom geometry;
+    	v_tbl varchar(200);
+    	v_sql varchar(1000);
+    BEGIN
+    	RAISE NOTICE 'Dropping isochrone table...';
+    	-- Drop the table being created if it exists
+    	v_sql:='DROP TABLE IF EXISTS public.'||v_input||'_iso_'||v_cost;
+    	EXECUTE v_sql;
+    	RAISE NOTICE 'Creating isochrone table...';
+    	-- Create the table to hold the data if it doesn't exist
+    	v_sql:='CREATE TABLE IF NOT EXISTS public.'||v_input||'_iso_'||v_cost||'
+    		( id serial NOT NULL,
+    		  node_id integer,
+    		  geometry geometry(Polygon,27700),
+    		  CONSTRAINT '||v_input||'_iso_'||v_cost||'_pkey PRIMARY KEY (id)
+    		);
+    		CREATE INDEX '||v_input||'_iso_'||v_cost||'_geometry
+    		  ON public.'||v_input||'_iso_'||v_cost||'
+    		  USING gist
+    		  (geometry);';
+    	EXECUTE v_sql;
+    	RAISE NOTICE 'Creating temporary node table...';
+    	-- Drop then recreate temporary node table used in generating isochrones
+    	DROP TABLE IF EXISTS node;
+    	CREATE TEMPORARY TABLE node AS
+    	    SELECT id,
+    		ST_X(geometry) AS x,
+    		ST_Y(geometry) AS y,
+    		geometry
+    		FROM (
+    		    SELECT source AS id,
+    			ST_Startpoint(geometry) AS geometry
+    			FROM itn_network
+    		    UNION
+    		    SELECT target AS id,
+    			ST_Startpoint(geometry) AS geometry
+    			FROM itn_network
+    		) AS node;
+    	RAISE NOTICE 'Calculating isochrones...';
+    	-- Loop through the input features, creating an isochrone for each one, and insert into the output table
+    	OPEN cur_src FOR EXECUTE format('SELECT nearest_node FROM '||v_input);
+    	LOOP
+    	FETCH cur_src INTO v_nn;
+    	EXIT WHEN NOT FOUND;
+    	SELECT ST_SetSRID(ST_MakePolygon(ST_AddPoint(foo.openline, ST_StartPoint(foo.openline))),27700) AS geometry
+    	FROM (
+    	  SELECT ST_Makeline(points ORDER BY id) AS openline
+    	  FROM (
+    	    SELECT row_number() over() AS id, ST_MakePoint(x, y) AS points 
+    	    FROM pgr_alphashape('
+    		SELECT *
+    		FROM node
+    		    JOIN
+    		    (SELECT * FROM pgr_drivingDistance(''
+    			SELECT gid AS id,
+    			source::int4 AS source,
+    			target::int4 AS target,
+    			cost_time::float8 AS cost,
+    			rcost_time::float8 AS reverse_cost
+    			FROM itn_network'',
+    			'||v_nn||',
+    			'||v_cost||',
+    			true,
+    			true)) AS dd ON node.id = dd.id1'::text)
+    	  ) AS a
+    	) AS foo INTO v_geom;
+    	-- Set the table name
+    	v_tbl:='public.'||v_input||'_iso_'||v_cost;
+    	-- Insert the isochrone geometries into the table
+    	EXECUTE format('INSERT INTO %s(node_id,geometry) VALUES ($1,$2)',v_tbl)
+    		USING v_nn, v_geom; 
+    	END LOOP;
+    	RETURN 1;
+    	CLOSE cur_src;
+    END;
+    $BODY$
+      LANGUAGE plpgsql VOLATILE
+      COST 100;
+  
+Execute the SQL by pressing F5 or the RUN button.  It should say that the query returned successfully with no result in xxx ms.
+Now we have a new function in the database that we can use to generate some alphashapes or isochrones around our points of interest layer.
+
+To execute the function we need the name of our POI table – poi – and a time interval.  We’ll run the function a couple of times to generate multiple isochrones so 300, 600 and 900 should do.
+
+    SELECT corporate.make_isochronesx('sotn_poi', 300);
+    
+    SELECT corporate.make_isochronesx('sotn_poi', 600);
+    
+    SELECT corporate.make_isochronesx('sotn_poi', 900);
+
+
 **References and supporting documentation**
 
 [PgRouting.org](http://pgrouting.org)
