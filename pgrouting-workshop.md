@@ -212,6 +212,8 @@ Now we are ready to route!
 
 Start or switch to QGIS.
 
+Add the sotn_road layer from PostGIS if not already loaded.
+
 Add the PgRouting Layer plugin through `Plugins > Install and Manage Plugins`
 
 You will need to go to Settings and check the experimental box and then back to the `All` tab to search for `pgRouting`. Check the box next to the plugin and click Install.
@@ -225,6 +227,8 @@ To configure the plugin we need to:
 - set the unique identifier – `gid` 
 - set the source and target fields – `source` and `target`
 - set the cost fields – `cost_len` and `rcost_len` (or `cost_time` and `rcost_time`)
+
+![pgRouting Plugin]()
 
 Once configured, we can set the routing function to **djikstra** and use the pickers to select the start and end points for our first route.
 
