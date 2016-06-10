@@ -232,17 +232,17 @@ To configure the plugin we need to:
 
 Once configured, we can set the routing function to **djikstra** and use the pickers to select the start and end points for our first route.
 
-![Djikstra]()
+![Djikstra](/images/10_djikstra_route.jpg)
 
 Try changing the cost fields from distance (`cost_len` / `rcost_len`) to time (`cost_time` / `rcost_time`) and see if the route changes.
 
 Select the **driving distance** function and pick a start node and then a distance (metres) or time (seconds) and see the rash of red nodes that indicate the nodes reachable within the specified cost.
 
-![Driving Distance]()
+![Driving Distance](/images/driving_distance.jpg)
 
 Select the **alphashape** function and use the same start node and cost set above and see the lovely pink result.  The alphashape is like a shrink-wrapped convex hull around the set of points.
 
-![Alphashape]()
+![Alphashape](/images/alphashape.jpg)
 
 ***
 
