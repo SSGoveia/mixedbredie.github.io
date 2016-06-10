@@ -238,11 +238,11 @@ Try changing the cost fields from distance (`cost_len` / `rcost_len`) to time (`
 
 Select the **driving distance** function and pick a start node and then a distance (metres) or time (seconds) and see the rash of red nodes that indicate the nodes reachable within the specified cost.
 
-![Driving Distance](/images/driving_distance.jpg)
+![Driving Distance](/images/10_driving_distance.jpg)
 
 Select the **alphashape** function and use the same start node and cost set above and see the lovely pink result.  The alphashape is like a shrink-wrapped convex hull around the set of points.
 
-![Alphashape](/images/alphashape.jpg)
+![Alphashape](/images/10_alphashape.jpg)
 
 ***
 
