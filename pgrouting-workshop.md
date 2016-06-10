@@ -99,6 +99,8 @@ Open or switch to PgAdminIII.
 
 Navigate to the tables in the `public` schema of the `pgRouting` database.  Click the SQL button on the top menu bar to open a SQL editor window.  We’ll be using this to update our `sotn_road` table with the fields and values that pgRouting needs.
 
+![SQL Editor Window](/images/8_pgadmin_sqlwindow.jpg)
+
 This section is a straightforward copy and paste exercise but we’ll go through it step by step.
 
 4.1 First, add the columns required to the `sotn_road` table:
@@ -118,6 +120,8 @@ This section is a straightforward copy and paste exercise but we’ll go through
       ADD COLUMN to_cost double precision,
       ADD COLUMN rule text,
       ADD COLUMN isolated integer;
+
+![Paste the SQL](/images/8_pgadmin_sqlwindow_query.jpg)
 
 4.2 Create the required indices on the source and target fields for the fast finding of the start and end of the route.  The source and target fields are populated with the node IDs that are created when the network topology is built later on.
 
@@ -176,6 +180,8 @@ Something to think about is different average speeds in rural and urban areas an
       SET cost_time = ST_Length(geometry)/1000.0/speed_km::numeric*3600.0,
       rcost_time = ST_Length(geometry)/1000.0/speed_km::numeric*3600.0;
 
+![Query Result](/images/8_pgadmin_sqlwindow_query_fin.jpg)
+
 It’s worth noting here that OS Open Roads has been designed as a high level road network for quick and dirty routing and as such does not have the extra detail required for turn restrictions and one way streets.  ITN and the new Highways layer have got the road routinginformation (RRI) detail.
 
 ***
@@ -186,9 +192,13 @@ Now that we have added all the fields and populated them with some reasonable va
 
     SELECT public.pgr_createTopology('public.sotn_road', 0.001, 'geometry', 'gid', 'source', 'target');
 
+![Build the network](/images/8_pgadmin_sqlwindow_build.jpg)
+
 It is always a good idea to analyse your network graph as it will highlight potential errors.  There will be some isolated segments, dead ends, potential gaps, intersections and ring geometries.
 
     SELECT public.pgr_analyzegraph('public.sotn_road', 0.001, 'geometry', 'gid', 'source', 'target');
+
+![Check the network](/images/8_pgadmin_sqlwindow_build_check.jpg)
 
 Before we use the network it’s a good idea to clean up the table after all the additions and changes to it.
 
