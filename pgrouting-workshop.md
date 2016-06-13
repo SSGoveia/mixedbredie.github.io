@@ -15,7 +15,7 @@ Have you got a DVD drive on your laptop?
 * Yes: get one of the OSGeo Live DVDs at FOSS4G UK
 * No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-vm-9.5.7z/download) (4GB) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-amd64.iso/download) (4GB)) for a USB drive.
 
-Get the data: [Dropbox Link](https://dl.dropboxusercontent.com/u/25604821/pgrouting-workshop.zip)
+Get the data: [Dropbox Link](https://dl.dropboxusercontent.com/u/25604821/pgrouting_workshop.zip)
 
 Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/en/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0) or, if you're running Linux, your package manager.
 
