@@ -475,6 +475,18 @@ To execute the function we need the name of our POI table – poi – and a time
     
     SELECT corporate.make_isochronesx('sotn_poi', 900);
 
+![5 minutes](/images/12_iso_300.jpg)
+
+5 minute isochrone
+
+![10 minutes](/images/12_iso_600.jpg)
+
+10 minute isochrone
+
+![15 minutes](/images/12_iso_900.jpg)
+
+15 minute isochrone
+
 ***
 
 **References and supporting documentation**
