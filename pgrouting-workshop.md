@@ -338,6 +338,8 @@ What the SQL above does is run the driving distance function which returns a set
 
 Add the poi.shp file to the QGIS canvas.  You will see four dots on the map.
 
+![Points of interest](/images/11_qgis_poi_layer.jpg)
+
 Open the Processing toolbox and find the PostGIS loading tool we used earlier.  Open it and set it up to load the poi shapefile into the database.
 
 Open or switch to PgAdminIII and connect to the pgRouting database.  Open a SQL editor window.
@@ -379,7 +381,7 @@ I expect we’ll be running short of time round about now so again this is a cop
       RETURNS integer AS
     $BODY$
     DECLARE
-    	cur_src refcursor;
+    	cur_src refcursor;    --set some variables
     	v_nn integer;
     	v_geom geometry;
     	v_tbl varchar(200);
@@ -403,7 +405,7 @@ I expect we’ll be running short of time round about now so again this is a cop
     		  (geometry);';
     	EXECUTE v_sql;
     	RAISE NOTICE 'Creating temporary node table...';
-    	-- Drop then recreate temporary node table used in generating isochrones
+    	-- Drop then recreate temporary node table from sotn_road used in generating isochrones
     	DROP TABLE IF EXISTS node;
     	CREATE TEMPORARY TABLE node AS
     	    SELECT id,
@@ -413,11 +415,11 @@ I expect we’ll be running short of time round about now so again this is a cop
     		FROM (
     		    SELECT source AS id,
     			ST_Startpoint(geometry) AS geometry
-    			FROM itn_network
+    			FROM sotn_road
     		    UNION
     		    SELECT target AS id,
     			ST_Startpoint(geometry) AS geometry
-    			FROM itn_network
+    			FROM sotn_road
     		) AS node;
     	RAISE NOTICE 'Calculating isochrones...';
     	-- Loop through the input features, creating an isochrone for each one, and insert into the output table
@@ -440,7 +442,7 @@ I expect we’ll be running short of time round about now so again this is a cop
     			target::int4 AS target,
     			cost_time::float8 AS cost,
     			rcost_time::float8 AS reverse_cost
-    			FROM itn_network'',
+    			FROM sotn_road'',
     			'||v_nn||',
     			'||v_cost||',
     			true,
@@ -462,6 +464,8 @@ I expect we’ll be running short of time round about now so again this is a cop
   
 Execute the SQL by pressing F5 or the RUN button.  It should say that the query returned successfully with no result in xxx ms.
 Now we have a new function in the database that we can use to generate some alphashapes or isochrones around our points of interest layer.
+
+In a nutshell then: the function creates a new table to hold the alphashape polygons. It drops and creates a temporary node table. It uses the node table to generate an alphashape for each input shape based on the cost given to the function at rumtime. These shapes are inserted into the polygon table. The function stops when all input features have been processed.
 
 To execute the function we need the name of our POI table – poi – and a time interval.  We’ll run the function a couple of times to generate multiple isochrones so 300, 600 and 900 should do.
 
