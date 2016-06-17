@@ -469,11 +469,11 @@ In a nutshell then: the function creates a new table to hold the alphashape poly
 
 To execute the function we need the name of our POI table – poi – and a time interval.  We’ll run the function a couple of times to generate multiple isochrones so 300, 600 and 900 should do.
 
-    SELECT corporate.make_isochronesx('sotn_poi', 300);
+    SELECT public.make_isochronesx('poi', 300);
     
-    SELECT corporate.make_isochronesx('sotn_poi', 600);
+    SELECT public.make_isochronesx('poi', 600);
     
-    SELECT corporate.make_isochronesx('sotn_poi', 900);
+    SELECT public.make_isochronesx('poi', 900);
 
 ![5 minutes](/images/12_iso_300.jpg)
 
