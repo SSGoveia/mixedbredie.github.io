@@ -12,12 +12,14 @@ We'll be using the OSGeo Live desktop to import some Ordnance Survey [Open Roads
 
 Have you got a DVD drive on your laptop?
 
-* Yes: get one of the OSGeo Live DVDs at FOSS4G UK
-* No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-vm-9.5.7z/download) (4GB) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/9.5/osgeo-live-9.5-amd64.iso/download) (4GB)) for a USB drive.
+* Yes: get one of the OSGeo 11.0 Live DVDs at FOSS4G UK
+* Yes, but I'd rather run as a VM: see links below
+* No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-vm.7z/download) (4GB) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-amd64.iso/download) (4GB)) for a USB drive.
+* You can also set up your own instance of PostgreSQL, PostGIS, pgRouting, pgAdmin and QGIS but these instructions designed for use with the OSGeo Live environment.
 
-Get the data: [Dropbox Link](https://dl.dropboxusercontent.com/u/25604821/pgrouting_workshop.zip)
+Get the data: [Dropbox Link](coming soon)
 
-Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/en/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/12_0) or, if you're running Linux, your package manager.
+Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/14_0) or, if you're running Linux, your package manager.
 
 To complete this workshop you will either need to boot your laptop from the live DVD or install one of the virtualisation applications and run the ISO or VMDK as a virtual machine.  You'll need to be able to access the internet and also your USB ports.  If you could test this before the workshop it would help make the experience a good one for all.
 
