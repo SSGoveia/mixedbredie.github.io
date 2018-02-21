@@ -1,12 +1,12 @@
 ---
 layout: page
-title: pgRouting Workshop
+title: pgRouting Workshop FOSS4G UK 2018
 permalink: /pgrouting-workshop/
 ---
 
 **Introduction and overview**
 
-We'll be using the OSGeo Live desktop to import Ordnance Survey [Open Roads](https://www.ordnancesurvey.co.uk/business-and-government/products/os-open-roads.html) data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions with some use cases.  If there is time at the end we'll look at using PostgreSQL functions.
+We'll be using the OSGeo Live desktop to import some Ordnance Survey [Open Roads](https://www.ordnancesurvey.co.uk/business-and-government/products/os-open-roads.html) data into a PostGIS database. Once loaded and configured the data will be built into a network topology for use with pgRouting.  With a working network we'll explore the different routing solutions in QGIS with the pgRoutingLayer plugin.  If there is time at the end we'll look at using PostgreSQL functions.
 
 **Step 0: Initial setup**
 
