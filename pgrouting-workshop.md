@@ -10,11 +10,9 @@ We'll be using the OSGeo Live desktop to import some Ordnance Survey [Open Roads
 
 **Step 0: Initial setup**
 
-Have you got a DVD drive on your laptop?
+For best results from this workshop the OSGeo Live environment needs to be installed in a VM or spun up as a live desktop session (off USB or DVD).
 
-* Yes: get one of the OSGeo 11.0 Live DVDs at FOSS4G UK
-* Yes, but I'd rather run as a VM: see links below
-* No: download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-vm.7z/download) (4GB) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-amd64.iso/download) (4GB)) for a USB drive.
+* Download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-vm.7z/download) (4GB) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-amd64.iso/download) (4GB)) for a USB drive.
 * You can also set up your own instance of PostgreSQL, PostGIS, pgRouting, pgAdmin and QGIS but these instructions designed for use with the OSGeo Live environment.
 
 Get the data: [Dropbox Link](coming soon)
@@ -29,13 +27,13 @@ To complete this workshop you will either need to boot your laptop from the live
 
 Boot into OSGeo Live or start your virtual machine.
 
-Open QGIS (Start > Geospatial > Desktop GIS > QGIS) or look in the Desktop GIS folder on the desktop.
+Open QGIS (Start > Geospatial > Desktop GIS > QGIS) or look in the Desktop GIS folder on the desktop.  The version of QGIS available is 2.14 Essen which is not cutting edge but will work for this exercise.
 
 ![Open QGIS](/images/1_qgisdesktop.jpg)
 
-Browse to the data folder holding the `xxxx_road` and `xxxx_node` shapefiles.
+Browse to the data folder holding the `xxxx_road` and `xxxx_node` shapefiles you downloaded.
 
-Drag the shapefiles onto the QGIS canvas.
+Drag the shapefiles onto the QGIS canvas.  Use the identify tool or open the attribute table and node that Open Roads now uses `UUID` for road link IDs and also start and end nodes.  During the load process we will create an `INTEGER` field to use with pgRouting as it can't handle the `UUID` strings.
 
 ![Check layers](/images/1_qgisdesktop_layers.jpg)
 
@@ -46,6 +44,18 @@ Drag the shapefiles onto the QGIS canvas.
 Open pgAdmin (Start > Geospatial > Databases > pgAdmin III) or look in the Databases folder on the desktop.
 
 ![Open PgAdminIII](/images/2_pgadminIII.jpg)
+
+We will create a new database called `pgrouting` and install the `postgis` and `pgrouting` extensions.  Connect to the local database server and expand the tree.  Right click on Databases and choose `New database`.  In the window that appears add the database name, `pgrouting`, and the owner, `user`, and click OK.
+
+Refresh the database connection and see that `pgrouting` has been created.  Select the database to highlight it and open a query window.  By selecting the database first, the query window know to execute any SQL against that database.  Copy the following into the window:
+
+```
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
+CREATE EXTENSION pgrouting;
+```
+
+Close the window, ignoring any messages to save, and refresh the database connection.  Look at the available extensions and see the new ones we have created.  We now have a spatial database with routing capability. That wasnae so bad, was it?
 
 Check connections: `local` (user / user)
 
