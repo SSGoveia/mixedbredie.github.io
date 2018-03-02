@@ -31,7 +31,7 @@ Open QGIS (Start > Geospatial > Desktop GIS > QGIS) or look in the Desktop GIS f
 
 ![Open QGIS](/images/1_qgisdesktop.jpg)
 
-Browse to the data folder holding the `xxxx_road` and `xxxx_node` shapefiles you downloaded.
+Browse to the data folder holding the `roadlink` and `roadnode` shapefiles you downloaded.
 
 Drag the shapefiles onto the QGIS canvas.  Use the identify tool or open the attribute table and node that Open Roads now uses `UUID` for road link IDs and also start and end nodes.  During the load process we will create an `INTEGER` field to use with pgRouting as it can't handle the `UUID` strings.
 
@@ -49,11 +49,9 @@ We will create a new database called `pgrouting` and install the `postgis` and `
 
 Refresh the database connection and see that `pgrouting` has been created.  Select the database to highlight it and open a query window.  By selecting the database first, the query window know to execute any SQL against that database.  Copy the following into the window:
 
-```
-CREATE EXTENSION postgis;
-CREATE EXTENSION postgis_topology;
-CREATE EXTENSION pgrouting;
-```
+    CREATE EXTENSION postgis;
+    CREATE EXTENSION postgis_topology;
+    CREATE EXTENSION pgrouting;
 
 Close the window, ignoring any messages to save, and refresh the database connection.  Look at the available extensions and see the new ones we have created.  We now have a spatial database with routing capability. That wasnae so bad, was it?
 
@@ -62,6 +60,8 @@ Check connections: `local` (user / user)
 Check database: `pgrouting`
 
 Check schema: `public`
+
+Check functions: `pgr_*` and `st_*`
 
 Check extensions: `pgRouting` and `PostGIS`
 
@@ -73,16 +73,18 @@ Check extensions: `pgRouting` and `PostGIS`
 
 Open or switch back to QGIS.
 
+Create a new connection to our pgRouting database using the details above.
+
 Open the Processing Toolbox (`Processing > Toolbox`) and search for `PostGIS`.
 
-Open the `Import vector layer to PostGIS database (existing connection)` tool.
+Pick and open the `Import vector layer to PostGIS database (existing connection)` tool from the results.
 
 ![Load data](/images/4_qgis_processing.jpg)
 
 Set the following: 
 
 -	Database connection name: `pgrouting`
--	Input layer: `xxxx_road`
+-	Input layer: `roadlink`
 -	Output geometry type: `linestring`
 -	Output CRS: `EPSG:27700`
 -	Schema name: `public`
@@ -93,11 +95,13 @@ Set the following:
  
 Note the OGR command in the box at the bottom - this could be copied into a batch file or shell script and reused.
 
+The primary key field, `gid`, is important here as it is used when building the network topology and nodes later on.
+
 Click the RUN button to load the shapefile into the database.  Takes a few seconds.
 
 ![Loader config](/images/5_qgis_postgisloader.jpg)
 
-When the load has completed close the tool.  Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `xxxx_road` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
+When the load has completed close the tool.  Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `roadlink` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
 
 ![Add PostGIS layer](/images/6_qgis_addpostgislayer.jpg)
 
@@ -109,15 +113,15 @@ When the load has completed close the tool.  Click the Add PostGIS layer button 
 
 Open or switch to PgAdminIII.
 
-Navigate to the tables in the `public` schema of the `pgRouting` database.  Click the SQL button on the top menu bar to open a SQL editor window.  We’ll be using this to update our `sotn_road` table with the fields and values that pgRouting needs.
+Navigate to the tables in the `public` schema of the `pgRouting` database.  Click the SQL button on the top menu bar to open a SQL editor window.  We’ll be using this to update our `roadlink` table with the fields and values that pgRouting needs.
 
 ![SQL Editor Window](/images/8_pgadmin_sqlwindow.jpg)
 
 This section is a straightforward copy and paste exercise but we’ll go through it step by step.
 
-4.1 First, add the columns required to the `xxxx_road` table:
+4.1 First, add the columns required to the `roadlink` table:
 
-    ALTER TABLE public.xxxx_road
+    ALTER TABLE public.roadlink
       ADD COLUMN source integer,
       ADD COLUMN target integer,
       ADD COLUMN speed_km integer,
@@ -137,12 +141,12 @@ This section is a straightforward copy and paste exercise but we’ll go through
 
 4.2 Create the required indices on the source and target fields for the fast finding of the start and end of the route.  The source and target fields are populated with the node IDs that are created when the network topology is built later on.
 
-    CREATE INDEX xxxx_road_source_idx ON public.sotn_road USING btree(source);
-    CREATE INDEX xxxx_road_target_idx ON public.sotn_road USING btree(target);
+    CREATE INDEX roadlink_source_idx ON public.roadlink USING btree(source);
+    CREATE INDEX roadlink_target_idx ON public.roadlink USING btree(target);
 
 4.3 Populate the line end coordinate fields (used in the Astar function).
 
-    UPDATE public.xxxx_road
+    UPDATE public.roadlink
       SET x1 = st_x(st_startpoint(geometry)),
         y1 = st_y(st_startpoint(geometry)),
         x2 = st_x(st_endpoint(geometry)),
@@ -150,51 +154,63 @@ This section is a straightforward copy and paste exercise but we’ll go through
 
 4.4 Use the length of the road link as the distance cost.
 
-    UPDATE public.xxxx_road
+    UPDATE public.roadlink
       SET cost_len = ST_Length(geometry),
       rcost_len = ST_Length(geometry);
 
 4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  I have set the "Not Classified" links to have a speed of 1km/h which increases the cost of traversing that link. Most "Not Classified" are paths and private roads and so I have chosen to make them less desirable to travel on. Adjust the speeds here as you see fit.  Note that I have used kilometres per hour and not miles per hour.
 
-    UPDATE public.xxxx_road SET speed_km = 
-      CASE WHEN class = 'A Road' AND formofway = 'Roundabout' THEN 20
-      WHEN class = 'A Road' AND formofway = 'Collapsed Dual Carriageway' THEN 60
-      WHEN class = 'A Road' AND formofway = 'Dual Carriageway' THEN 60
-      WHEN class = 'A Road' AND formofway = 'Single Carriageway' THEN 55
-      WHEN class = 'A Road' AND formofway = 'Slip Road' THEN 55
-      WHEN class = 'B Road' AND formofway = 'Single Carriageway' THEN 50
-      WHEN class = 'B Road' AND formofway = 'Collapsed Dual Carriageway' THEN 55
-      WHEN class = 'B Road' AND formofway = 'Slip Road' THEN 50
-      WHEN class = 'B Road' AND formofway = 'Roundabout' THEN 20
-      WHEN class = 'B Road' AND formofway = 'Dual Carriageway' THEN 55
-      WHEN class = 'Motorway' AND formofway = 'Collapsed Dual Carriageway' THEN 70
-      WHEN class = 'Motorway' AND formofway = 'Dual Carriageway' THEN 70
-      WHEN class = 'Motorway' AND formofway = 'Roundabout' THEN 20
-      WHEN class = 'Motorway' AND formofway = 'Slip Road' THEN 60
-      WHEN class = 'Motorway' AND formofway = 'Single Carriageway' THEN 60
-      WHEN class = 'Not Classified' AND formofway = 'Roundabout' THEN 1
-      WHEN class = 'Not Classified' AND formofway = 'Single Carriageway' THEN 1
-      WHEN class = 'Not Classified' AND formofway = 'Slip Road' THEN 1
-      WHEN class = 'Not Classified' AND formofway = 'Dual Carriageway' THEN 1
-      WHEN class = 'Not Classified' AND formofway = 'Collapsed Dual Carriageway' THEN 1
-      WHEN class = 'Unclassified' AND formofway = 'Single Carriageway' THEN 30
-      WHEN class = 'Unclassified' AND formofway = 'Dual Carriageway' THEN 40
-      WHEN class = 'Unclassified' AND formofway = 'Roundabout' THEN 20
-      WHEN class = 'Unclassified' AND formofway = 'Slip Road' THEN 30
-      WHEN class = 'Unclassified' AND formofway = 'Collapsed Dual Carriageway' THEN 40
+    UPDATE public.roadlink SET speed_km = 
+      CASE 
+        WHEN class = 'A Road' AND formofway = 'Roundabout' THEN 20
+        WHEN class = 'A Road' AND formofway = 'Collapsed Dual Carriageway' THEN 60
+        WHEN class = 'A Road' AND formofway = 'Dual Carriageway' THEN 60
+        WHEN class = 'A Road' AND formofway = 'Single Carriageway' THEN 55
+        WHEN class = 'A Road' AND formofway = 'Slip Road' THEN 35
+        WHEN class = 'A Road' AND formofway = 'Shared Use Carriageway' THEN 50
+        WHEN class = 'B Road' AND formofway = 'Single Carriageway' THEN 50
+        WHEN class = 'B Road' AND formofway = 'Collapsed Dual Carriageway' THEN 55
+        WHEN class = 'B Road' AND formofway = 'Slip Road' THEN 35
+        WHEN class = 'B Road' AND formofway = 'Roundabout' THEN 20
+        WHEN class = 'B Road' AND formofway = 'Dual Carriageway' THEN 55
+        WHEN class = 'B Road' AND formofway = 'Shared Use Carriageway' THEN 50
+        WHEN class = 'Motorway' AND formofway = 'Collapsed Dual Carriageway' THEN 70
+        WHEN class = 'Motorway' AND formofway = 'Dual Carriageway' THEN 70
+        WHEN class = 'Motorway' AND formofway = 'Roundabout' THEN 20
+        WHEN class = 'Motorway' AND formofway = 'Slip Road' THEN 35
+        WHEN class = 'Motorway' AND formofway = 'Single Carriageway' THEN 60
+        WHEN class = 'Motorway' AND formofway = 'Shared Use Carriageway' THEN 50
+        WHEN class = 'Classified Unnumbered' AND formofway = 'Roundabout' THEN 20
+        WHEN class = 'Classified Unnumbered' AND formofway = 'Single Carriageway' THEN 50
+        WHEN class = 'Classified Unnumbered' AND formofway = 'Slip Road' THEN 35
+        WHEN class = 'Classified Unnumbered' AND formofway = 'Dual Carriageway' THEN 55
+        WHEN class = 'Classified Unnumbered' AND formofway = 'Collapsed Dual Carriageway' THEN 55
+        WHEN class = 'Classified Unnumbered' AND formofway = 'Shared Use Carriageway' THEN 50
+        WHEN class = 'Not Classified' AND formofway = 'Roundabout' THEN 20
+        WHEN class = 'Not Classified' AND formofway = 'Single Carriageway' THEN 50
+        WHEN class = 'Not Classified' AND formofway = 'Slip Road' THEN 35
+        WHEN class = 'Not Classified' AND formofway = 'Dual Carriageway' THEN 55
+        WHEN class = 'Not Classified' AND formofway = 'Collapsed Dual Carriageway' THEN 55
+        WHEN class = 'Not Classified' AND formofway = 'Shared Use Carriageway' THEN 50
+        WHEN class = 'Unclassified' AND formofway = 'Single Carriageway' THEN 30
+        WHEN class = 'Unclassified' AND formofway = 'Dual Carriageway' THEN 40
+        WHEN class = 'Unclassified' AND formofway = 'Roundabout' THEN 20
+        WHEN class = 'Unclassified' AND formofway = 'Slip Road' THEN 30
+        WHEN class = 'Unclassified' AND formofway = 'Collapsed Dual Carriageway' THEN 40
+        WHEN class = 'Unclassified' AND formofway = 'Shared Use Carriageway' THEN 50
       ELSE 1 END;
       
 Something to think about is different average speeds in rural and urban areas and you could update selected links that intersect with an urban polygon and halve the average speed to get more realistic results.
 
 4.6 Then use the speed and length to calulate road link travel time.
 
-    UPDATE public.xxxx_road
+    UPDATE public.roadlink
       SET cost_time = ST_Length(geometry)/1000.0/speed_km::numeric*3600.0,
       rcost_time = ST_Length(geometry)/1000.0/speed_km::numeric*3600.0;
 
 ![Query Result](/images/8_pgadmin_sqlwindow_query_fin.jpg)
 
-It’s worth noting here that OS Open Roads has been designed as a high level road network for quick and dirty routing and as such does not have the extra detail required for turn restrictions and one way streets.  ITN and the new Highways layer have got the road routinginformation (RRI) detail.
+It’s worth noting here that OS Open Roads has been designed as a high level road network for quick and dirty routing and as such does not have the extra detail required for turn restrictions and one way streets.  ITN and the new Highways layer have got the road routing information (RRI) detail.
 
 ***
 
@@ -202,19 +218,19 @@ It’s worth noting here that OS Open Roads has been designed as a high level ro
 
 Now that we have added all the fields and populated them with some reasonable values we can build our network topology.  This will take about a minute.
 
-    SELECT public.pgr_createTopology('public.xxxx_road', 0.001, 'geometry', 'gid', 'source', 'target');
+    SELECT public.pgr_createTopology('public.roadlink', 0.001, 'geometry', 'gid', 'source', 'target');
 
 ![Build the network](/images/8_pgadmin_sqlwindow_build.jpg)
 
 It is always a good idea to analyse your network graph as it will highlight potential errors.  There will be some isolated segments, dead ends, potential gaps, intersections and ring geometries.
 
-    SELECT public.pgr_analyzegraph('public.xxxx_road', 0.001, 'geometry', 'gid', 'source', 'target');
+    SELECT public.pgr_analyzegraph('public.roadlink', 0.001, 'geometry', 'gid', 'source', 'target');
 
 ![Check the network](/images/8_pgadmin_sqlwindow_build_check.jpg)
 
 Before we use the network it’s a good idea to clean up the table after all the additions and changes to it.
 
-    VACUUM ANALYZE VERBOSE public.xxxx_road;
+    VACUUM ANALYZE VERBOSE public.roadlink;
 
 Now we are ready to route!
 
@@ -235,7 +251,7 @@ The plugin should appear in a docked panel in QGIS.  If it doesn’t, right clic
 To configure the plugin we need to:
 
 - set the database connection – `pgrouting `
-- name the network table – `xxxx_road`
+- name the network table – `roadlink`
 - set the unique identifier – `gid` 
 - set the source and target fields – `source` and `target`
 - set the cost fields – `cost_len` and `rcost_len` (or `cost_time` and `rcost_time`)
@@ -271,7 +287,7 @@ To calculate the shortest path between two points on the network we can use the 
              source::integer,
              target::integer,
              cost_len::double precision AS cost
-            FROM xxxx_road',
+            FROM roadlink',
     7997, 11452, false, false);
 
 To try another function between the same start and end points we can use the A-star function.  This uses the geographical information we added earlier (x1, y1, x2, y2) to prefer network links that are closest to the target of the shortest path search.
@@ -282,14 +298,14 @@ To try another function between the same start and end points we can use the A-s
              target::integer,
              length::double precision AS cost,
              x1, y1, x2, y2
-            FROM xxxx_road',
+            FROM roadlink',
     7997, 11452, false, false);
     
 Driving distance is a useful function as a number of other functions hang off it including `pgr_alphashape` and `pgr_pointsAsPolygon`.  The functions below show the links reachable within 2000m of OS HQ.  Without reverse cost:
 
     SELECT seq, id1 AS node, cost
         FROM pgr_drivingDistance(
-                'SELECT gid, source, target, cost_len FROM xxxx_road',
+                'SELECT gid, source, target, cost_len FROM roadlink',
                 11452, 2000, false, false
         );
 
@@ -297,7 +313,7 @@ With reverse cost:
 
     SELECT seq, id1 AS node, cost
         FROM pgr_drivingDistance(
-                'SELECT id, source, target, cost_len, rcost_len FROM xxxx_road’,
+                'SELECT id, source, target, cost_len, rcost_len FROM roadlink’,
                 11452, 2000, true, true
         );
 
@@ -310,11 +326,11 @@ We need to create a temporary node table first (should be about double the numbe
     	FROM (
     	    SELECT source AS id,
     		ST_Startpoint(geometry) AS geometry
-    		FROM xxxx_road
+    		FROM roadlink
     	    UNION
     	    SELECT target AS id,
     		ST_Startpoint(geometry) AS geometry
-    		FROM xxxx_road
+    		FROM roadlink
     	) AS node;
 
 Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 seconds) from OS HQ.
@@ -334,7 +350,7 @@ Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 se
          			target::int4 AS target,
          			cost_time::float8 AS cost,
          			rcost_time::float8 AS reverse_cost
-         			FROM xxxx_road'',
+         			FROM roadlink'',
          			11452,
          			600,
          			true,
@@ -365,12 +381,12 @@ Copy and paste the following SQL into the editor window:
        SELECT a.gid, b.id, min(a.dist)
        FROM
          (SELECT poi.gid, 
-                 min(ST_distance(poi.geometry,  xxxx_road_vertices_pgr.the_geom)) AS dist
-          FROM poi, xxxx_road_vertices_pgr
+                 min(ST_distance(poi.geometry,  roadlink_vertices_pgr.the_geom)) AS dist
+          FROM poi, roadlink_vertices_pgr
           GROUP BY poi.gid) AS a,
-         (SELECT poi.gid, xxxx_road_vertices_pgr.id, 
-                 ST_distance(poi.geometry, xxxx_road_vertices_pgr.the_geom) AS dist
-       FROM poi, xxxx_road_vertices_pgr) AS b
+         (SELECT poi.gid, roadlink_vertices_pgr.id, 
+                 ST_distance(poi.geometry, roadlink_vertices_pgr.the_geom) AS dist
+       FROM poi, roadlink_vertices_pgr) AS b
        WHERE a.dist = b. dist
        AND a.gid = b.gid
        GROUP BY a.gid, b.id;
