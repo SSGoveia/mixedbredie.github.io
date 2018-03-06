@@ -6,12 +6,14 @@ permalink: /about/
 
 ### Information
 
-Resources for the pgRouting workshop held at FOSS4G UK 14 - 16 June 2016
+Resources for the pgRouting workshop held at FOSS4GUK 8 - 9 March 2018
 
 ### Contact me
 
 Ross McDonald, GIS Data Coordinator, Angus Council
 
-01307476419
+Dog and bone: 01307476419
 
-mcdonaldr @ angus.gov.uk
+The Email: mcdonaldr@angus.gov.uk
+
+The Twitter: @mixedbredie
