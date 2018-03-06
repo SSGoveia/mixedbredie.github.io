@@ -35,7 +35,7 @@ Browse to the data folder holding the `roadlink` and `roadnode` shapefiles you d
 
 Drag the shapefiles onto the QGIS canvas.  Use the identify tool or open the attribute table and node that Open Roads now uses `UUID` for road link IDs and also start and end nodes.  During the load process we will create an `INTEGER` field to use with pgRouting as it can't handle the `UUID` strings.
 
-![Check layers](/images/1_qgisdesktop_layers.jpg)
+![Check layers](/images/2_qgis_layers.png)
 
 ***
 
@@ -91,7 +91,7 @@ Open the Processing Toolbox (`Processing > Toolbox`) and search for `PostGIS`.
 
 Pick and open the `Import vector layer to PostGIS database (existing connection)` tool from the results.
 
-![Load data](/images/4_qgis_processing.jpg)
+![Load data](/images/4_qgis_processing.png)
 
 Set the following: 
 
