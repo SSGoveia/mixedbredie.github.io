@@ -115,7 +115,7 @@ Click the RUN button to load the shapefile into the database.  Takes a few secon
 
 When the load has completed close the tool.  Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `roadlink` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
 
-![Add PostGIS layer](/images/6_qgis_addpostgislayer.jpg)
+![Add PostGIS layer](/images/5_add_postgis_layers.png)
 
 ![Check PostGIS layer](/images/7_qgis_postgislayer.jpg)
 
