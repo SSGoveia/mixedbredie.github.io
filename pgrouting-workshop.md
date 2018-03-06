@@ -170,7 +170,7 @@ This section is a straightforward copy and paste exercise but we’ll go through
       SET cost_len = ST_Length(geometry),
       rcost_len = ST_Length(geometry);
 
-4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  I have set the "Not Classified" links to have a speed of 1km/h which increases the cost of traversing that link. Most "Not Classified" are paths and private roads and so I have chosen to make them less desirable to travel on. Adjust the speeds here as you see fit.  Note that I have used kilometres per hour and not miles per hour.
+4.5 Set the average speed depending on road class and the nature of the road using the class and formofway fields.  Adjust the speeds here as you see fit.  Note that I have used kilometres per hour and not miles per hour.
 
     UPDATE public.roadlink SET speed_km = 
       CASE 
@@ -252,7 +252,7 @@ Now we are ready to route!
 
 Start or switch to QGIS.
 
-Add the sotn_road layer from PostGIS if not already loaded.
+Add the `roadlink` layer from PostGIS if not already loaded.
 
 Add the PgRouting Layer plugin through `Plugins > Install and Manage Plugins`
 
