@@ -47,13 +47,23 @@ Open pgAdmin (Start > Geospatial > Databases > pgAdmin III) or look in the Datab
 
 We will create a new database called `pgrouting` and install the `postgis` and `pgrouting` extensions.  Connect to the local database server and expand the tree.  Right click on Databases and choose `New database`.  In the window that appears add the database name, `pgrouting`, and the owner, `user`, and click OK.
 
-Refresh the database connection and see that `pgrouting` has been created.  Select the database to highlight it and open a query window.  By selecting the database first, the query window know to execute any SQL against that database.  Copy the following into the window:
+![New database](/images/2_new_database.png)
+
+![New database SQL](/images/2_new_database_SQL.png)
+
+Refresh the database connection and see that `pgrouting` has been created.  
+
+![Check the new database](/images/3_new_database_initial.png)
+
+Select the database to highlight it and open a query window.  By selecting the database first, the query window know to execute any SQL against that database.  Copy the following into the window:
 
     CREATE EXTENSION postgis;
     CREATE EXTENSION postgis_topology;
     CREATE EXTENSION pgrouting;
+    
+![Create extension query](/images/3_create_extensions_results.png)
 
-Close the window, ignoring any messages to save, and refresh the database connection.  Look at the available extensions and see the new ones we have created.  We now have a spatial database with routing capability. That wasnae so bad, was it?
+To execute each statement you can highlight the line and press F5.  The message window will tell you whether it completed successfully or not.  Close the window, ignoring any messages to save, and refresh the database connection.  Look at the available extensions and see the new ones we have created.  We now have a spatial database with routing capability. That wasnae so bad, was it?
 
 Check connections: `local` (user / user)
 
@@ -65,7 +75,7 @@ Check functions: `pgr_*` and `st_*`
 
 Check extensions: `pgRouting` and `PostGIS`
 
-![Check connection](/images/3_pgadminIII.jpg)
+![Check connection](/images/3_new_database_configured.png)
 
 ***
 
