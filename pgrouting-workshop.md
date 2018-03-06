@@ -117,7 +117,7 @@ When the load has completed close the tool.  Click the Add PostGIS layer button 
 
 ![Add PostGIS layer](/images/5_add_postgis_layers.png)
 
-![Check PostGIS layer](/images/7_qgis_postgislayer.jpg)
+![Check PostGIS layer](/images/7_qgis_postgis_layer.png)
 
 ***
 
