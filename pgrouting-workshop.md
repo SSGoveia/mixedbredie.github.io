@@ -85,6 +85,8 @@ Open or switch back to QGIS.
 
 Create a new connection to our pgRouting database using the details above.
 
+![New postgis connection](/images/4_qgis_postgis_connection.png)
+
 Open the Processing Toolbox (`Processing > Toolbox`) and search for `PostGIS`.
 
 Pick and open the `Import vector layer to PostGIS database (existing connection)` tool from the results.
