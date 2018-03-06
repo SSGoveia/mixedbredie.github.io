@@ -111,7 +111,7 @@ The primary key field, `gid`, is important here as it is used when building the 
 
 Click the RUN button to load the shapefile into the database.  Takes a few seconds.
 
-![Loader config](/images/5_qgis_postgisloader.jpg)
+![Loader config](/images/4_import_to_pgrouting.png)
 
 When the load has completed close the tool.  Click the Add PostGIS layer button (blue elephant) and connect to the pgRouting database.  Select the `roadlink` layer and click Add.  Note that it is in EPSG:27700.  The layer will be added to the QGIS canvas and will match the shapefile version already there.  Use the identify tool to select a link and check the attributes.
 
