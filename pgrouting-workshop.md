@@ -15,7 +15,7 @@ For best results from this workshop the OSGeo Live environment needs to be insta
 * Download either the [VM image](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-vm.7z/download) (4GB) for VirtualBox or the ISO ([32bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-i386.iso/download) (4GB) or [64bit](https://sourceforge.net/projects/osgeo-live/files/11.0/osgeo-live-11.0-amd64.iso/download) (4GB)) for a USB drive.
 * You can also set up your own instance of PostgreSQL, PostGIS, pgRouting, pgAdmin and QGIS but these instructions designed for use with the OSGeo Live environment.
 
-Get the data: [Dropbox Link](coming soon)
+Get the data: [Nextcloud Link](https://nextcloud.mixedbredie.net/s/ar747wpkGW4Ngmb)
 
 Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads) or VMWare Player [here](https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_workstation_player/14_0) or, if you're running Linux, your package manager.
 
