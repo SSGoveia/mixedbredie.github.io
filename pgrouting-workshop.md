@@ -296,38 +296,39 @@ To calculate the shortest path between two points on the network we can use the 
 
     SELECT seq, id1 AS node, id2 AS edge, cost FROM pgr_dijkstra('
     SELECT gid AS id,
-             source::integer,
-             target::integer,
-             cost_len::double precision AS cost
-            FROM roadlink',
-    7997, 11452, false, false);
+         source::integer,
+         target::integer,
+         cost_len::double precision AS cost
+        FROM roadlink',
+    26920, 4232, false, false);
 
 To try another function between the same start and end points we can use the A-star function.  This uses the geographical information we added earlier (x1, y1, x2, y2) to prefer network links that are closest to the target of the shortest path search.
 
     SELECT seq, id1 AS node, id2 AS edge, cost FROM pgr_astar('
     SELECT gid AS id,
-             source::integer,
-             target::integer,
-             length::double precision AS cost,
-             x1, y1, x2, y2
-            FROM roadlink',
-    7997, 11452, false, false);
+         source::integer,
+         target::integer,
+         cost_len::double precision AS cost,
+         x1, y1, x2, y2
+        FROM roadlink',
+    22661, 25892, false, false);
     
-Driving distance is a useful function as a number of other functions hang off it including `pgr_alphashape` and `pgr_pointsAsPolygon`.  The functions below show the links reachable within 2000m of OS HQ.  Without reverse cost:
+Driving distance is a useful function as a number of other functions hang off it including `pgr_alphashape` and `pgr_pointsAsPolygon`.  The functions below show the links reachable within 2000m of the centre of Acle, Norfolk:
 
-    SELECT seq, id1 AS node, cost
-        FROM pgr_drivingDistance(
-                'SELECT gid, source, target, cost_len FROM roadlink',
-                11452, 2000, false, false
-        );
+    SELECT *
+    FROM pgr_drivingDistance(
+            'SELECT gid AS id, source, target, cost_len AS cost FROM roadlink',
+            24722, 2000
+    );
 
-With reverse cost:
+Within 5 minutes of the centre of Acle, Norfolk:
 
-    SELECT seq, id1 AS node, cost
-        FROM pgr_drivingDistance(
-                'SELECT id, source, target, cost_len, rcost_len FROM roadlink’,
-                11452, 2000, true, true
-        );
+    SELECT *
+    FROM pgr_drivingDistance(
+            'SELECT gid AS id, source, target, cost_time AS cost FROM roadlink',
+            24722, 300
+    );
+
 
 The alphashape function is a bit more complex as it uses a number of PostGIS and pgRouting functions to generate the resulting polygon.  Copy and paste the SQL below into your SQL window and run it.  
 
@@ -363,7 +364,7 @@ Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 se
          			cost_time::float8 AS cost,
          			rcost_time::float8 AS reverse_cost
          			FROM roadlink'',
-         			11452,
+         			13631,
          			600,
          			true,
          			true)) AS dd ON node.id = dd.id1'::text)
@@ -380,7 +381,7 @@ Add the poi.shp file to the QGIS canvas.  You will see four dots on the map.
 
 ![Points of interest](/images/11_qgis_poi_layer.jpg)
 
-Open the Processing toolbox and find the PostGIS loading tool we used earlier.  Open it and set it up to load the poi shapefile into the database.
+Open the Processing toolbox and find the PostGIS loading tool we used earlier.  Open it and set it up to load the poi shapefile into the database.  Make sure to set the coordinate system to EPSG:27700, the unique id field to gid and the geometry column to geometry. Uncheck promote to multipart.
 
 Open or switch to PgAdminIII and connect to the pgRouting database.  Open a SQL editor window.
 
@@ -389,7 +390,7 @@ Copy and paste the following SQL into the editor window:
     ALTER TABLE public.poi 
     ADD COLUMN nearest_node integer;
      
-    CREATE TABLE temp AS
+    CREATE TEMPORARY TABLE temp AS
        SELECT a.gid, b.id, min(a.dist)
        FROM
          (SELECT poi.gid, 
@@ -455,11 +456,11 @@ I expect we’ll be running short of time round about now so again this is a cop
     		FROM (
     		    SELECT source AS id,
     			ST_Startpoint(geometry) AS geometry
-    			FROM sotn_road
+    			FROM roadlink
     		    UNION
     		    SELECT target AS id,
     			ST_Startpoint(geometry) AS geometry
-    			FROM sotn_road
+    			FROM roadlink
     		) AS node;
     	RAISE NOTICE 'Calculating isochrones...';
     	-- Loop through the input features, creating an isochrone for each one, and insert into the output table
@@ -482,7 +483,7 @@ I expect we’ll be running short of time round about now so again this is a cop
     			target::int4 AS target,
     			cost_time::float8 AS cost,
     			rcost_time::float8 AS reverse_cost
-    			FROM sotn_road'',
+    			FROM roadlink'',
     			'||v_nn||',
     			'||v_cost||',
     			true,
