@@ -346,7 +346,7 @@ We need to create a temporary node table first (should be about double the numbe
     		FROM roadlink
     	) AS node;
 
-Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 seconds) from OS HQ.
+Copy and paste this SQL to generate the alphashape for 10 minutes travel (600 seconds) from somewhere in Norfolk.
 
     SELECT ST_SetSRID(ST_MakePolygon(ST_AddPoint(foo.openline, ST_StartPoint(foo.openline))),27700) AS geometry
     	FROM (
