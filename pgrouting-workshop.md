@@ -272,7 +272,7 @@ To configure the plugin we need to:
 
 Once configured, we can set the routing function to **djikstra** and use the pickers to select the start and end points for our first route.
 
-![Djikstra](/images/10_djikstra_multiroute.png)
+![Djikstra](/images/10_dijkstra_multiroute.png)
 
 Try changing the cost fields from distance (`cost_len` / `rcost_len`) to time (`cost_time` / `rcost_time`) and see if the route changes.
 
