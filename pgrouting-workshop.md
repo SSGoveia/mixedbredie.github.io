@@ -268,21 +268,21 @@ To configure the plugin we need to:
 - set the source and target fields – `source` and `target`
 - set the cost fields – `cost_len` and `rcost_len` (or `cost_time` and `rcost_time`)
 
-![pgRouting Plugin](/images/10_pgroutinglayer_plugin.jpg)
+![pgRouting Plugin](/images/10_pgrouting_layer_plugin.png)
 
 Once configured, we can set the routing function to **djikstra** and use the pickers to select the start and end points for our first route.
 
-![Djikstra](/images/10_djikstra_route.jpg)
+![Djikstra](/images/10_djikstra_multiroute.png)
 
 Try changing the cost fields from distance (`cost_len` / `rcost_len`) to time (`cost_time` / `rcost_time`) and see if the route changes.
 
 Select the **driving distance** function and pick a start node and then a distance (metres) or time (seconds) and see the rash of red nodes that indicate the nodes reachable within the specified cost.
 
-![Driving Distance](/images/10_driving_distance.jpg)
+![Driving Distance](/images/10_drivingdistance_multiroute.png)
 
 Select the **alphashape** function and use the same start node and cost set above and see the lovely pink result.  The alphashape is like a shrink-wrapped convex hull around the set of points.
 
-![Alphashape](/images/10_alphashape.jpg)
+![Alphashape](/images/10_alphashape_route.png)
 
 ***
 
