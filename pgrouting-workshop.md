@@ -410,7 +410,7 @@ Copy and paste the following SQL into the editor window:
         FROM temp
         WHERE temp.gid = poi.gid);
 
-This SQL assigns each of the points in the poi layer a node ID from the sotn_road network.  We’ll use this information to create a function to compute alphashapes for each of the points of interest.
+This SQL assigns each of the points in the poi layer a node ID from the `roadlink` network.  We’ll use this information to create a function to compute alphashapes for each of the points of interest.
 
 ***
 
@@ -446,7 +446,7 @@ I expect we’ll be running short of time round about now so again this is a cop
     		  (geometry);';
     	EXECUTE v_sql;
     	RAISE NOTICE 'Creating temporary node table...';
-    	-- Drop then recreate temporary node table from sotn_road used in generating isochrones
+    	-- Drop then recreate temporary node table from roadlinks used in generating isochrones
     	DROP TABLE IF EXISTS node;
     	CREATE TEMPORARY TABLE node AS
     	    SELECT id,
