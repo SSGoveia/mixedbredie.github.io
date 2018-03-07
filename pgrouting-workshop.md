@@ -379,7 +379,7 @@ What the SQL above does is run the driving distance function which returns a set
 
 Add the poi.shp file to the QGIS canvas.  You will see four dots on the map.
 
-![Points of interest](/images/11_qgis_poi_layer.jpg)
+![Points of interest](/images/11_qgis_poi_layer.png)
 
 Open the Processing toolbox and find the PostGIS loading tool we used earlier.  Open it and set it up to load the poi shapefile into the database.  Make sure to set the coordinate system to EPSG:27700, the unique id field to gid and the geometry column to geometry. Uncheck promote to multipart.
 
@@ -515,18 +515,12 @@ To execute the function we need the name of our POI table – poi – and a time
     SELECT public.make_isochronesx('poi', 600);
     
     SELECT public.make_isochronesx('poi', 900);
+    
+Back in QGIS, refresh your pgrouting database connection and you'll see the new tables. Add them to the canvas and you'll get something like this:
 
-![5 minutes](/images/12_iso_300.jpg)
+![5, 10, 15 minute isochrones](/images/12_iso_369.png)
 
-5 minute isochrone
-
-![10 minutes](/images/12_iso_600.jpg)
-
-10 minute isochrone
-
-![15 minutes](/images/12_iso_900.jpg)
-
-15 minute isochrone
+5, 10 and 15 minute isochrones
 
 ***
 
